@@ -1,9 +1,9 @@
-# Protheus Coder — Claude Code MCP server exposed over Streamable HTTP
-# for Microsoft Copilot Studio.
+# Protheus Coder — custom MCP server (FastMCP + Claude Agent SDK) exposed over
+# Streamable HTTP for Microsoft Copilot Studio.
 #
 # Layers:
-#   - Node.js            -> Claude Code CLI + supergateway
-#   - Python 3 + uv      -> plugadvpl (AdvPL/TLPP indexer)
+#   - Node.js            -> Claude Code CLI (harness driven by the Agent SDK)
+#   - Python 3           -> FastMCP server + claude-agent-sdk + plugadvpl
 #   - codegraph (npm)    -> code graph for other languages
 #   - Caddy              -> API-key auth in front of the gateway
 FROM node:22-bookworm-slim
@@ -30,19 +30,21 @@ RUN apt-get update \
 # Caddy binary (reverse proxy + API-key gate) from the official image.
 COPY --from=caddy:2 /usr/bin/caddy /usr/bin/caddy
 
-# Node tooling: Claude Code CLI + supergateway (stdio -> Streamable HTTP) + codegraph.
+# Node tooling: Claude Code CLI (Agent SDK harness) + codegraph.
 RUN npm install -g \
         @anthropic-ai/claude-code \
-        supergateway \
         @colbymchenry/codegraph \
     && npm cache clean --force
 
-# Python tooling: plugadvpl (AdvPL/TLPP indexer, SQLite + FTS5 + call graph).
-RUN pip3 install plugadvpl
-
 WORKDIR /app
 
+# Python tooling: MCP server deps (FastMCP + claude-agent-sdk) and the AdvPL/TLPP
+# indexer (plugadvpl: SQLite + FTS5 + call graph).
+COPY server/requirements.txt /app/server/requirements.txt
+RUN pip3 install -r /app/server/requirements.txt plugadvpl
+
 # Application files.
+COPY server/ /app/server/
 COPY scripts/ /app/scripts/
 COPY proxy/Caddyfile /app/proxy/Caddyfile
 COPY config/claude-settings.json /root/.claude/settings.json

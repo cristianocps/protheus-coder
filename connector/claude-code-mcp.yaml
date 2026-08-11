@@ -12,10 +12,12 @@ swagger: '2.0'
 info:
   title: Protheus Coder MCP
   description: >-
-    Claude Code exposto como servidor MCP para entender projetos Protheus
-    (AdvPL/TLPP). Fornece ferramentas de leitura de codigo, busca e consulta
-    de indices (plugadvpl/codegraph) sobre repositorios do Azure DevOps.
-  version: '1.0.0'
+    Servidor MCP (FastMCP + Claude Agent SDK) para entender projetos Protheus
+    (AdvPL/TLPP) e outras linguagens. Expoe ferramentas de alto nivel e somente
+    leitura: list_repos, sync_repo, repo_status, search_code (indices
+    plugadvpl/codegraph) e ask_codebase (perguntas em linguagem natural)
+    sobre repositorios do Azure DevOps.
+  version: '2.0.0'
 host: REPLACE_WITH_CONTAINER_APP_FQDN
 basePath: /
 schemes:

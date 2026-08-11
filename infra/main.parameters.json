@@ -11,6 +11,9 @@
     "anthropicApiKey": {
       "value": "${ANTHROPIC_API_KEY}"
     },
+    "claudeModel": {
+      "value": "${CLAUDE_MODEL=}"
+    },
     "mcpApiKey": {
       "value": "${MCP_API_KEY}"
     },

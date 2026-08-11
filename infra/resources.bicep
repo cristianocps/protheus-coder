@@ -6,6 +6,7 @@ param tags object
 
 @secure()
 param anthropicApiKey string
+param claudeModel string = ''
 @secure()
 param mcpApiKey string
 param azdoOrg string
@@ -206,6 +207,10 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'GATEWAY_PORT'
               value: '8000'
+            }
+            {
+              name: 'CLAUDE_MODEL'
+              value: claudeModel
             }
           ]
           volumeMounts: [

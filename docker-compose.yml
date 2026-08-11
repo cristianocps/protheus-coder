@@ -13,13 +13,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # Anthropic key used by `claude mcp serve`.
+      # Anthropic key used by the Claude Agent SDK (ask_codebase).
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY}
       # Static key required by Copilot Studio's custom connector (X-API-Key).
       MCP_API_KEY: ${MCP_API_KEY:?set MCP_API_KEY}
       # Azure DevOps access (read-only PAT scoped to all repositories).
       AZDO_ORG: ${AZDO_ORG:?set AZDO_ORG}
       AZDO_PAT: ${AZDO_PAT:?set AZDO_PAT}
+      # Optional: pin a cheaper/faster Claude model for ask_codebase.
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-}
       PUBLIC_PORT: "8080"
       GATEWAY_PORT: "8000"
     volumes:

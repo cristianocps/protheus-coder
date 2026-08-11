@@ -3,8 +3,9 @@
 #
 # Flow (no sync job — repos are fetched on demand by the orchestrator):
 #   1. Prepare the persistent /workspace cache and drop CLAUDE.md memory.
-#   2. Start `claude mcp serve` behind supergateway as a Streamable HTTP
-#      endpoint on 127.0.0.1:8000/mcp.
+#   2. Start the FastMCP server (server.main) as a Streamable HTTP endpoint on
+#      127.0.0.1:8000/mcp. It fronts the Claude Agent SDK with a small set of
+#      read-only, high-level tools.
 #   3. Start Caddy on :8080, which validates the API key and reverse-proxies
 #      to the gateway. Caddy runs in the foreground as PID 1's child.
 set -euo pipefail
@@ -30,19 +31,16 @@ if [[ -n "${AZDO_PAT:-}" ]]; then
     git config --global credential.helper store >/dev/null 2>&1 || true
 fi
 
-# --- 2. Gateway (stdio claude mcp serve -> Streamable HTTP) --------------------
-cd "${WORKSPACE}"
+# --- 2. Gateway (FastMCP server -> Streamable HTTP) ---------------------------
+# The server package lives in /app; each ask_codebase call sets the agent's cwd
+# to the target repo explicitly, so the server's own cwd is irrelevant.
+cd /app
+export PYTHONPATH="/app:${PYTHONPATH:-}"
 
-# supergateway binds 0.0.0.0:${GATEWAY_PORT}; only Caddy's port is published
+# The FastMCP app binds 127.0.0.1:${GATEWAY_PORT}; only Caddy's port is published
 # through the Container Apps ingress, so the gateway stays private.
-log "Starting supergateway on :${GATEWAY_PORT}/mcp"
-supergateway \
-    --stdio "claude mcp serve" \
-    --outputTransport streamableHttp \
-    --stateful \
-    --port "${GATEWAY_PORT}" \
-    --streamableHttpPath /mcp \
-    --sessionTimeout 600000 &
+log "Starting FastMCP server on ${GATEWAY_HOST:-127.0.0.1}:${GATEWAY_PORT}/mcp"
+python3 -m server.main &
 GATEWAY_PID=$!
 
 # Propagate gateway crash to the container so Container Apps restarts it.

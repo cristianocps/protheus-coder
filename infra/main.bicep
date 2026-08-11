@@ -11,9 +11,12 @@ param environmentName string
 @description('Primary location for all resources.')
 param location string
 
-@description('Anthropic API key used by `claude mcp serve`.')
+@description('Anthropic API key used by the Claude Agent SDK (ask_codebase).')
 @secure()
 param anthropicApiKey string
+
+@description('Optional Claude model id for ask_codebase; empty uses the SDK default.')
+param claudeModel string = ''
 
 @description('Static API key that Copilot Studio sends as the X-API-Key header.')
 @secure()
@@ -48,6 +51,7 @@ module resources 'resources.bicep' = {
     location: location
     tags: tags
     anthropicApiKey: anthropicApiKey
+    claudeModel: claudeModel
     mcpApiKey: mcpApiKey
     azdoOrg: azdoOrg
     azdoPat: azdoPat
