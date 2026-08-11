@@ -1,0 +1,33 @@
+# Public entrypoint for Copilot Studio.
+# Validates a static API key (header X-API-Key) and reverse-proxies the MCP
+# Streamable HTTP endpoint served by supergateway on the loopback interface.
+{
+	admin off
+	auto_https off
+}
+
+:{$PUBLIC_PORT:8080} {
+	# Liveness probe for Container Apps (no auth required).
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	handle /mcp* {
+		# Reject anything whose X-API-Key header does not match the secret.
+		@unauthorized not header X-API-Key {$MCP_API_KEY}
+		respond @unauthorized "Unauthorized" 401 {
+			close
+		}
+
+		reverse_proxy 127.0.0.1:{$GATEWAY_PORT:8000} {
+			# Streamable HTTP keeps long-lived responses open; disable buffering.
+			flush_interval -1
+			transport http {
+				read_timeout 600s
+				write_timeout 600s
+			}
+		}
+	}
+
+	respond "Not Found" 404
+}

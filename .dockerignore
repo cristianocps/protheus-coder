@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+workspace/
+.azure/
+node_modules/
+__pycache__/
+*.pyc
+README.md
+docs/
+*.md
+!config/workspace-CLAUDE.md

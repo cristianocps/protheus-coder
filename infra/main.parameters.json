@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "anthropicApiKey": {
+      "value": "${ANTHROPIC_API_KEY}"
+    },
+    "mcpApiKey": {
+      "value": "${MCP_API_KEY}"
+    },
+    "azdoOrg": {
+      "value": "${AZDO_ORG}"
+    },
+    "azdoPat": {
+      "value": "${AZDO_PAT}"
+    },
+    "containerImage": {
+      "value": "${SERVICE_PROTHEUS_CODER_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+    }
+  }
+}

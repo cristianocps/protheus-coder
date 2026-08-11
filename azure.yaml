@@ -1,0 +1,21 @@
+# azd project definition.
+#   azd auth login
+#   azd up            # provisions infra + builds/pushes image + deploys
+#
+# Secrets are provided via azd env before `azd up`:
+#   azd env set ANTHROPIC_API_KEY "sk-ant-..."
+#   azd env set MCP_API_KEY "$(openssl rand -hex 32)"
+#   azd env set AZDO_ORG "contoso"
+#   azd env set AZDO_PAT "<read-only PAT>"
+name: protheus-coder
+metadata:
+  template: protheus-coder@1.0.0
+
+services:
+  protheus-coder:
+    project: .
+    language: docker
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: .

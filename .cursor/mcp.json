@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "protheus-coder": {
+      "url": "http://localhost:8080/mcp",
+      "headers": {
+        "X-API-Key": "4b455348f74cab28bf1c2a8159f3bc9a3d10d69bfd74349865ea1f2178133b30"
+      }
+    }
+  }
+}

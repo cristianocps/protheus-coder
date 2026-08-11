@@ -1,0 +1,21 @@
+# Secrets
+.env
+*.pat
+*.key
+id_rsa*
+
+# Local workspace cache (cloned repos + indices)
+workspace/
+.codegraph/
+.plugadvpl/
+*.sqlite
+*.db
+
+# azd / Azure
+.azure/
+
+# OS / editor
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc

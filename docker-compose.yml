@@ -1,0 +1,36 @@
+# Local development / end-to-end testing.
+#
+#   cp .env.example .env   # fill in the secrets
+#   docker compose up --build
+#
+# Then point MCP Inspector at http://localhost:8080/mcp with header
+# X-API-Key: <MCP_API_KEY>.
+services:
+  protheus-coder:
+    build:
+      context: .
+    image: protheus-coder:local
+    ports:
+      - "8080:8080"
+    environment:
+      # Anthropic key used by `claude mcp serve`.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY}
+      # Static key required by Copilot Studio's custom connector (X-API-Key).
+      MCP_API_KEY: ${MCP_API_KEY:?set MCP_API_KEY}
+      # Azure DevOps access (read-only PAT scoped to all repositories).
+      AZDO_ORG: ${AZDO_ORG:?set AZDO_ORG}
+      AZDO_PAT: ${AZDO_PAT:?set AZDO_PAT}
+      PUBLIC_PORT: "8080"
+      GATEWAY_PORT: "8000"
+    volumes:
+      # Persistent cache of cloned repos + indices.
+      - workspace:/workspace
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  workspace:
